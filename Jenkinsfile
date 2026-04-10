@@ -1,59 +1,44 @@
-//jenkinsfile
 pipeline {
-	agent any
-	environment {
-		DOCKER_IMAGE = 'hello-world-python:latest'
-	}
+    agent any
 
-	stages {
-		stage ('Checkout') {
-			step {
-				git branch: 'main', url:'https://github.com/rushikeshnikam7887/jenkins_docker.git'
-			}
-		}
+    environment {
+        DOCKER_IMAGE = 'hello-world-python:latest'
+    }
 
-		stage('Docker Build') {
-			steps {
-				if (fileExists('Dockerfile')) {
-					sh "Docker build -t ${env.DOCKER_IMAGE} ."
-					} else {
-						error "Dockerfile not found in the workplace."
-					}
-				}
-			}
-		}
+    stages {
 
-		stage('Docker Run (Optional)') {
-			steps {
-				sh "Docker run --rm ${env.DOCKER_IMAGE}"
-			}
-		}
-	}
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/rushikeshnikam7887/jenkins_docker.git'
+            }
+        }
 
-	post {
-		success {
-			echo 'success'
-		}
-		failure {
-			echo 'failure'
-		}
-	}
+        stage('Docker Build') {
+            steps {
+                script {
+                    if (fileExists('Dockerfile')) {
+                        sh "docker build -t ${env.DOCKER_IMAGE} ."
+                    } else {
+                        error "Dockerfile not found in the workspace."
+                    }
+                }
+            }
+        }
 
-  
+        stage('Docker Run (Optional)') {
+            steps {
+                sh "docker run --rm ${env.DOCKER_IMAGE}"
+            }
+        }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    post {
+        success {
+            echo 'success'
+        }
+        failure {
+            echo 'failure'
+        }
+    }
+}
 
